@@ -17,9 +17,9 @@ function readKeypairFromPath (path: string): Keypair {
 }
 
 async function main () {
-  const programKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/program.json'))
-  const aliceKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/alice.json'))
-  const bobKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/bob.json'))
+  const donationsSystemKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/program.json'))
+  const altruistKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/alice.json'))
+  const donationsWalletKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/bob.json'))
   const connection = new Connection('http://127.0.0.1:8899', 'confirmed')
 
   const data = Buffer.alloc(8)
@@ -27,15 +27,15 @@ async function main () {
 
   const ix = new TransactionInstruction({
     keys: [
-      { pubkey: aliceKeypair.publicKey, isSigner: true, isWritable: true },
-      { pubkey: bobKeypair.publicKey, isSigner: false, isWritable: true },
+      { pubkey: altruistKeypair.publicKey, isSigner: true, isWritable: true },
+      { pubkey: donationsWalletKeypair.publicKey, isSigner: false, isWritable: true },
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
-    programId: programKeypair.publicKey,
+    programId: donationsSystemKeypair.publicKey,
     data
   })
 
-  const res = await sendAndConfirmTransaction(connection, new Transaction().add(ix), [aliceKeypair])
+  const res = await sendAndConfirmTransaction(connection, new Transaction().add(ix), [altruistKeypair])
   console.log('\nResponse:\n', res)
   
 }
