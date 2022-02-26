@@ -1,1 +1,2 @@
-/target
+./program/target
+./client/node_modules
