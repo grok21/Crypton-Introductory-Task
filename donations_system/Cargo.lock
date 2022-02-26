@@ -284,13 +284,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crypton"
-version = "0.1.0"
-dependencies = [
- "solana-program",
-]
-
-[[package]]
 name = "curve25519-dalek"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -321,6 +314,13 @@ dependencies = [
  "block-buffer 0.10.2",
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "donations_system"
+version = "0.1.0"
+dependencies = [
+ "solana-program",
 ]
 
 [[package]]
