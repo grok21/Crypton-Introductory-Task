@@ -1,3 +1,5 @@
 /program/target
 /client/node_modules
 /localnet/ledger
+/client/.cache
+/client/dist
