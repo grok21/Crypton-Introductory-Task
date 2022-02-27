@@ -9,7 +9,8 @@
     "declaration": true,
     "moduleResolution": "node",
     "module": "esnext",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "main.ts"
