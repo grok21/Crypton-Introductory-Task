@@ -5,12 +5,14 @@ localnet-init:
 	solana airdrop 10 localnet/altruist.json -u localhost
 
 deploy:
-	cd donations_system; cargo build-bpf
-	solana donations_system deploy donations_system/target/deploy/donations_system.so -u localhost --donations_system-id localnet/donations_system.json
+	cd program; cargo build-bpf
+	solana program deploy program/target/deploy/program.so -u localhost --program-id localnet/program.json
 
 testnet-deploy:
-	cd donations_system; cargo build-bpf
-	solana donations_system deploy donations_system/target/deploy/donations_system.so -u testnet --donations_system-id localnet/donations_system.json --keypair localnet/altruist.json --upgrade-authority localnet/altruist.json
+	cd program 
+	cargo build-bpf
+	cd ../
+	solana program deploy program/target/deploy/program.so -u testnet --program-id localnet/program.json --keypair localnet/altruist.json --upgrade-authority localnet/altruist.json
 
 client-cli:
 	cd client/cli && npm install && ./node_modules/.bin/ts-node main.ts

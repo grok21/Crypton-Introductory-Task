@@ -24,7 +24,7 @@ fn process_instruction(
 ) -> ProgramResult {
   let acc_iter = &mut accounts.iter();
   let altruist_info = next_account_info(acc_iter)?;
-  let donations_wallet_info = next_account_info(acc_iter)?;
+  let fund_info = next_account_info(acc_iter)?;
 
   let amount = input
     .get(..8)
@@ -33,10 +33,10 @@ fn process_instruction(
     .ok_or(ProgramError::InvalidInstructionData)?;
 
   invoke(
-    &system_instruction::transfer(altruist_info.key, donations_wallet_info.key, amount),
-    &[altruist_info.clone(), donations_wallet_info.clone()],
+    &system_instruction::transfer(altruist_info.key, fund_info.key, amount),
+    &[altruist_info.clone(), fund_info.clone()],
   )?;
 
-  msg!("Transfer {} lamports from {:?} to {:?}: done", amount, altruist_info.key, donations_wallet_info.key);
+  msg!("Transfer {} lamports from {:?} to {:?}: done", amount, altruist_info.key, fund_info.key);
   Ok(())
 }

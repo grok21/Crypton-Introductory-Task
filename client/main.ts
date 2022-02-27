@@ -17,9 +17,9 @@ function readKeypairFromPath (path: string): Keypair {
 }
 
 async function main () {
-  const donationsSystemKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/program.json'))
+  const programKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/program.json'))
   const altruistKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/alice.json'))
-  const donationsWalletKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/bob.json'))
+  const fundKeypair = readKeypairFromPath(path.join(__dirname, '../localnet/bob.json'))
   const connection = new Connection('http://127.0.0.1:8899', 'confirmed')
 
   const data = Buffer.alloc(8)
@@ -28,10 +28,10 @@ async function main () {
   const ix = new TransactionInstruction({
     keys: [
       { pubkey: altruistKeypair.publicKey, isSigner: true, isWritable: true },
-      { pubkey: donationsWalletKeypair.publicKey, isSigner: false, isWritable: true },
+      { pubkey: fundKeypair.publicKey, isSigner: false, isWritable: true },
       { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
     ],
-    programId: donationsSystemKeypair.publicKey,
+    programId: programKeypair.publicKey,
     data
   })
 
