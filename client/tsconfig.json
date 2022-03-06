@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "main.ts"
+    "browser.ts"
   ],
   "exclude": [
     "node_modules"
