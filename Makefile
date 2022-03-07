@@ -8,7 +8,6 @@ localnet-validator:
 localnet-init:
 	solana airdrop 10 localnet/alice.json -u localhost
 	solana airdrop 10 localnet/bob.json -u localhost
-	solana airdrop 10 localnet/program.json -u localhost
 
 deploy:
 	solana program deploy program/target/deploy/program.so -u localhost --program-id localnet/program.json 
