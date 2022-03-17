@@ -1,42 +1,12 @@
-use std::convert::TryInto;
+pub mod error;
+pub mod instruction;
+pub mod processor;
+pub mod state;
 
-use solana_program::{
-  account_info::{next_account_info, AccountInfo},
-  entrypoint,
-  entrypoint::ProgramResult,
-  msg,
-  program::invoke,
-  program_error::ProgramError,
-  pubkey::Pubkey,
-  system_instruction,
-};
+#[cfg(not(feature = "no-entrypoint"))]
+pub mod entrypoint;
 
-entrypoint!(process_instruction);
+pub const COUNTER_SEED: &str = "counter";
+pub const SETTINGS_SEED: &str = "settings";
 
-// Accounts expected:
-// 0. `[signer, writable]` Send lamports from this account
-// 1. `[writable]` Send lamports to this account
-// 2. `[]` System program
-fn process_instruction(
-  _program_id: &Pubkey,
-  accounts: &[AccountInfo],
-  input: &[u8],
-) -> ProgramResult {
-  let acc_iter = &mut accounts.iter();
-  let altruist_info = next_account_info(acc_iter)?;
-  let fund_info = next_account_info(acc_iter)?;
-
-  let amount = input
-    .get(..8)
-    .and_then(|slice| slice.try_into().ok())
-    .map(u64::from_le_bytes)
-    .ok_or(ProgramError::InvalidInstructionData)?;
-
-  invoke(
-    &system_instruction::transfer(altruist_info.key, fund_info.key, amount),
-    &[altruist_info.clone(), fund_info.clone()],
-  )?;
-
-  msg!("Transfer {} lamports from {:?} to {:?}: done", amount, altruist_info.key, fund_info.key);
-  Ok(())
-}
+solana_program::declare_id!("9onZvMzqAFzSHJrLNVWfqLRFFQ5ZCGzNXB4PBxmp6z5Y");
