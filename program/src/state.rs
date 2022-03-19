@@ -14,9 +14,9 @@ impl Donater {
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct Fund {
-  pub donater_addresses: vec!<[u8, 32]>,
+  pub donater_addresses: Vec<[u8; 32]>,
 
-  pub admin_address: [u8, 32]
+  pub admin_address: [u8; 32]
 }
 
 impl Fund {
