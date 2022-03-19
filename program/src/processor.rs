@@ -23,12 +23,14 @@ impl Processor {
     msg!("Donations execute instruction with code: {:?}", input);
     let instruction = ScamFundInstruction::try_from_slice(input)?;
     match instruction {
-      ScamFundInstruction::Donate => Self::process_donate(accounts),
-      ScamFundInstruction::Scam => Self::process_scam(),
+      ScamFundInstruction::Donate { amount } => {
+        Self::process_donate(accounts, amount)
+      },
+      ScamFundInstruction::Scam { admin_address, amount } => Self::process_scam(),
     }
   }
 
-  fn process_donate(accounts: &[AccountInfo], amount_bytes: &[u8]) -> ProgramResult {
+  fn process_donate(accounts: &[AccountInfo], amount: u64) -> ProgramResult {
     let acc_iter = &mut accounts.iter();
     let donater = next_account_info(acc_iter)?;
     let donater_info = next_account_info(acc_iter)?;
@@ -36,7 +38,7 @@ impl Processor {
     let scam_fund_info = next_account_info(acc_iter)?;
 
 
-    if !donater_info.is_signer {
+    if !donater.is_signer {
       return Err(ProgramError::MissingRequiredSignature);
     }
 
@@ -47,16 +49,10 @@ impl Processor {
     if !ScamFundInfo::is_ok_scam_fund_info_pubkey(scam_fund_info.key) {
       return Err(ScamFundError::WrongScamFundInfoPDA.into());
     }
-
-    let amount = amount_bytes
-        .get(..8)
-        .and_then(|slice| slice.try_into().ok())
-        .map(u64::from_le_bytes)
-        .ok_or(ProgramError::InvalidInstructionData)?;
     
     invoke(
-      &system_instruction::transfer(donater_info.key, scam_fund_info.key, amount),
-      &[donater_info.clone(), scam_fund_info.clone()],
+      &system_instruction::transfer(donater.key, scam_fund.key, amount),
+      &[donater.clone(), scam_fund.clone()],
     )?;
 
     let mut scam_fund_info_pda = ScamFundInfo::try_from_slice(&scam_fund_info.data.borrow())?;
