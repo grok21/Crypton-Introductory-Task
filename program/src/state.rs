@@ -26,8 +26,12 @@ pub struct ScamFundInfo {
 }
 
 impl ScamFundInfo {
+  pub fn get_scam_fund_info_pubkey_with_bump() -> (Pubkey, u8) {
+    Pubkey::find_program_address(&[SCAM_FUND_SEED.as_bytes()], &id())
+  }
+
   pub fn get_scam_fund_info_pubkey() -> Pubkey {
-    let (pubkey, _) = Pubkey::find_program_address(&[SCAM_FUND_SEED.as_bytes()], &id());
+    let (pubkey, _) = Self::get_scam_fund_info_pubkey_with_bump();
     pubkey
   }
 
