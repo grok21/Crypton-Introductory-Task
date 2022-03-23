@@ -31,13 +31,45 @@ impl Processor {
     msg!("Donations execute instruction with code: {:?}", input);
     let instruction = ScamFundInstruction::try_from_slice(input)?;
     match instruction {
-      ScamFundInstruction::Donate { amount } => {
-        Self::process_donate(accounts, amount)
-      },
-      ScamFundInstruction::Scam { admin_address, amount } => {
-        Self::process_scam(accounts, admin_address, amount)
-      }
+      ScamFundInstruction::Init { admin_address } => Self::process_init(accounts, admin_address),
+      ScamFundInstruction::Donate { amount } => Self::process_donate(accounts, amount),
+      ScamFundInstruction::Scam { amount } => Self::process_scam(accounts, amount)
     }
+  }
+
+  fn process_init(accounts: &[AccountInfo], admin_address: [u8; 32],) -> ProgramResult {
+    let acc_iter = &mut accounts.iter();
+    let admin = next_account_info(acc_iter)?;
+    let scam_fund_info = next_account_info(acc_iter)?;
+    let rent_info = next_account_info(acc_iter)?;
+    let system_program_info = next_account_info(acc_iter)?;
+
+    let (scam_fund_info_pubkey, bump_seed) = ScamFundInfo::get_scam_fund_info_pubkey_with_bump();
+    if scam_fund_info.data_is_empty() {
+      msg!("Creating scam fund info account");
+      let new_scam_fund_info = ScamFundInfo {
+        donater_addresses: Vec::new(),
+        admin_address
+      };
+      let space = new_scam_fund_info.try_to_vec()?.len();
+      let rent = &Rent::from_account_info(rent_info)?;
+      let lamports = rent.minimum_balance(space);
+      let signer_seeds: &[&[_]] = &[SCAM_FUND_SEED.as_bytes(), &[bump_seed]];
+
+      invoke_signed(
+        &system_instruction::create_account(
+          admin.key,
+          &scam_fund_info_pubkey,
+          lamports,
+          space as u64,
+          &id(),
+        ),
+        &[admin.clone(), scam_fund_info.clone(), system_program_info.clone()],
+        &[&signer_seeds],
+      )?;
+    }
+
+    Ok(())
   }
 
   fn process_donate(accounts: &[AccountInfo], amount: u64) -> ProgramResult {
@@ -78,17 +110,17 @@ impl Processor {
     Ok(())
   }
 
-  fn process_scam(accounts: &[AccountInfo], admin_address: [u8; 32], amount: u64) -> ProgramResult {
+  fn process_scam(accounts: &[AccountInfo], amount: u64) -> ProgramResult {
     msg!("scamming started...");
 
     let acc_iter = &mut accounts.iter();
     let admin = next_account_info(acc_iter)?;
+    let receiver = next_account_info(acc_iter)?;
     let scam_fund = next_account_info(acc_iter)?;
     let scam_fund_info = next_account_info(acc_iter)?;
-    let rent_info = next_account_info(acc_iter)?;
-    let system_program_info = next_account_info(acc_iter)?;
+    
 
-    let (scam_fund_info_pubkey, bump_seed) = ScamFundInfo::get_scam_fund_info_pubkey_with_bump();
+    let (scam_fund_info_pubkey, _) = ScamFundInfo::get_scam_fund_info_pubkey_with_bump();
     if scam_fund_info_pubkey != *scam_fund_info.key {
       return Err(ProgramError::InvalidArgument);
     }
@@ -97,38 +129,14 @@ impl Processor {
       return Err(ProgramError::MissingRequiredSignature);
     }
 
-    if scam_fund_info.data_is_empty() {
-      msg!("Creating scam fund info account");
-      let new_scam_fund_info = ScamFundInfo {
-        donater_addresses: Vec::new(),
-        admin_address
-      };
-      let space = new_scam_fund_info.try_to_vec()?.len();
-      let rent = &Rent::from_account_info(rent_info)?;
-      let lamports = rent.minimum_balance(space);
-      let signer_seeds: &[&[_]] = &[SCAM_FUND_SEED.as_bytes(), &[bump_seed]];
-
-      invoke_signed(
-        &system_instruction::create_account(
-          admin.key,
-          &scam_fund_info_pubkey,
-          lamports,
-          space as u64,
-          &id(),
-        ),
-        &[admin.clone(), scam_fund_info.clone(), system_program_info.clone()],
-        &[&signer_seeds],
-      )?;
-    }
-
     let scam_fund_info_pda = ScamFundInfo::try_from_slice(&scam_fund_info.data.borrow())?;
     if scam_fund_info_pda.admin_address != admin.key.to_bytes() && scam_fund_info_pda.admin_address != [0; 32] {
       return Err(ScamFundError::AdminRequired.into());
     }
 
     invoke(
-      &system_instruction::transfer(scam_fund.key, admin.key, amount),
-      &[scam_fund.clone(), admin.clone()]
+      &system_instruction::transfer(scam_fund.key, receiver.key, amount),
+      &[scam_fund.clone(), receiver.clone()]
     )?;
     msg!("scamming done!");
 
