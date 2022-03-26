@@ -1,15 +1,19 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+pub mod errors;
+pub mod instructions;
+pub mod state;
+
+pub const DONATER_SEED: &str = "donater";
+pub const SCAM_FUND_SEED: &str = "scam_fund";
+
+declare_id!("9onZvMzqAFzSHJrLNVWfqLRFFQ5ZCGzNXB4PBxmp6z5Y");
 
 #[program]
 pub mod scam_fund {
-    use super::*;
+  use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        Ok(())
-    }
+  // pub fn donate(ctx: Context<Donate>) -> Result<()> {
+  //   instructions::donate(ctx)
+  // }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
