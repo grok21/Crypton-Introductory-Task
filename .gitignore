@@ -3,3 +3,9 @@
 /localnet/ledger
 /client/.cache
 /client/dist
+
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+node_modules

@@ -2,7 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { ScamFund } from "../target/types/scam_fund";
 
-describe("scam_fund", () => {
+describe("scam-fund", () => {
   // Configure the client to use the local cluster.
   anchor.setProvider(anchor.Provider.env());
 

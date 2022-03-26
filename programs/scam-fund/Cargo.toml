@@ -1,5 +1,5 @@
 [package]
-name = "scam_fund"
+name = "scam-fund"
 version = "0.1.0"
 description = "Created with Anchor"
 edition = "2018"
@@ -17,4 +17,3 @@ default = []
 
 [dependencies]
 anchor-lang = "0.22.1"
-anchor-spl = "0.22.1"
