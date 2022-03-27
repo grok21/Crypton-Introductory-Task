@@ -7,7 +7,7 @@ use crate::state::donater_info::*;
 use crate::state::scam_fund_info::*;
 use crate::errors::ScamFundError;
 
-pub fn donate(ctx: Context<Donate>, amount: u64) -> Result<()> {
+pub fn donate(ctx: Context<DonateContext>, amount: u64) -> Result<()> {
   let donater = &ctx.accounts.donater;
   let donater_info = &mut ctx.accounts.donater_info;
   let scam_fund = &ctx.accounts.scam_fund;
@@ -38,7 +38,7 @@ pub fn donate(ctx: Context<Donate>, amount: u64) -> Result<()> {
 
 
 #[derive(Accounts)]
-pub struct Donate<'info> {
+pub struct DonateContext<'info> {
   pub donater: Signer<'info>,
   
   #[account(mut)]

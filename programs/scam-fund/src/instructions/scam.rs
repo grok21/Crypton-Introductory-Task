@@ -6,13 +6,13 @@ use anchor_lang::solana_program::{
 use crate::state::scam_fund_info::*;
 use crate::errors::ScamFundError;
 
-fn process_scam(ctx: Context<Scam>, amount: u64) -> Result<()> {
+pub fn scam(ctx: Context<ScamContext>, amount: u64) -> Result<()> {
   let admin = &ctx.accounts.admin;
   let receiver = &ctx.accounts.receiver;
   let scam_fund = &ctx.accounts.scam_fund;
   let scam_fund_info = &ctx.accounts.scam_fund_info;
   
-  msg!("scamming started...");
+  msg!("scaming started...");
 
   let (scam_fund_info_pubkey, _) = ScamFundInfo::get_scam_fund_info_pubkey_with_bump();
   if scam_fund_info_pubkey != scam_fund_info.key() {
@@ -27,17 +27,18 @@ fn process_scam(ctx: Context<Scam>, amount: u64) -> Result<()> {
     &system_instruction::transfer(scam_fund.key, receiver.key, amount),
     &[scam_fund.to_account_info().clone(), receiver.to_account_info().clone()]
   )?;
-  msg!("scamming done!");
+  msg!("scaming done!");
 
   Ok(())
 }
 
 
 #[derive(Accounts)]
-pub struct Scam<'info> {
+pub struct ScamContext<'info> {
   pub admin: Signer<'info>,
   
-  pub receiver: Signer<'info>,
+  /// CHECK: Я просто хз как тут по-другому
+  pub receiver: UncheckedAccount<'info>,
   
   pub scam_fund: Signer<'info>,
 

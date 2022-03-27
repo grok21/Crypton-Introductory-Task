@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use instructions::*;
 
 pub mod errors;
 pub mod instructions;
@@ -13,11 +14,15 @@ declare_id!("9onZvMzqAFzSHJrLNVWfqLRFFQ5ZCGzNXB4PBxmp6z5Y");
 pub mod scam_fund {
   use super::*;
 
-  // pub fn donate(ctx: Context<Donate>) -> Result<()> {
-  //   instructions::donate(ctx)
-  // }
-}
+  pub fn init(ctx: Context<InitializeContext>) -> Result<()> {
+    instructions::init(ctx)
+  }
 
-// context initialize
-// context donate 
-// context scam
+  pub fn donate(ctx: Context<DonateContext>, amount: u64) -> Result<()> {
+    instructions::donate(ctx, amount)
+  }
+
+  pub fn scam(ctx: Context<ScamContext>, amount: u64) -> Result<()> {
+    instructions::scam(ctx, amount)
+  }
+}
