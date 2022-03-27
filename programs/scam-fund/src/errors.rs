@@ -11,7 +11,8 @@ pub enum ScamFundError {
   #[msg("Wrong settings PDA")]
   WrongScamFundInfoPDA,
 
-  #[msg("Invalid signature")]
-  InvalidSignature,
+  #[msg("Invalid argument")]
+  InvalidArgument,
+
 
 }

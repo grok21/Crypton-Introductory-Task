@@ -17,3 +17,7 @@ pub mod scam_fund {
   //   instructions::donate(ctx)
   // }
 }
+
+// context initialize
+// context donate 
+// context scam
